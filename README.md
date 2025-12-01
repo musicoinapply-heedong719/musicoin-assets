@@ -42,7 +42,7 @@ Replace <username> with your GitHub account name.
 ```json
 {
   "name": "Musicoin Token List",
-  "logoURI": "[https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png](https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png)",
+  "logoURI": "https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png",
   "tokens": [
     {
       "chainId": 137,
@@ -50,7 +50,7 @@ Replace <username> with your GitHub account name.
       "name": "Musicoin 3.0",
       "symbol": "MUSIC",
       "decimals": 18,
-      "logoURI": "[https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png](https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png)"
+      "logoURI": "https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png"
     }
   ],
   "version": {
