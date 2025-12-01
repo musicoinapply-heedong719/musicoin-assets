@@ -1,0 +1,19 @@
+{
+  "name": "Musicoin Token List",
+  "logoURI": "https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png",
+  "tokens": [
+    {
+      "chainId": 137,
+      "address": "0xYourTokenAddressHere",
+      "name": "Musicoin 3.0",
+      "symbol": "MUSIC",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png"
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  }
+}
