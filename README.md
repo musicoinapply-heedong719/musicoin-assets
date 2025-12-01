@@ -50,7 +50,7 @@ Replace <username> with your GitHub account name.
   },
   "tokens": [
     {
-      "chainId": 80002,
+      "chainId": 137,
       "address": "0x0Bea477C4A9c18f62Ec5cAD553d08Dbba136e372",
       "symbol": "M3PDEV",
       "name": "Musicoin 3.0 Dev Token",
