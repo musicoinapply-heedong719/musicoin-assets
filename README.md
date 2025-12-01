@@ -19,7 +19,7 @@ By maintaining these elements in a unified structure, the Musicoin ecosystem ens
 
 musicoin-assets/
  ├── logo/
- │    ├── musicoin.png
+ │    ├── musicoin-1024.png
  │    ├── musicoin-64.png
  │    ├── musicoin-128.png
  │    └── musicoin-256.png
