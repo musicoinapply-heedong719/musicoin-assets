@@ -1,19 +1,19 @@
 {
-  "name": "Musicoin Token List",
-  "logoURI": "https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png",
-  "tokens": [
-    {
-      "chainId": 137,
-      "address": "0x0Bea477C4A9c18f62Ec5cAD553d08Dbba136e372",
-      "name": "Musicoin 3.0",
-      "symbol": "MUSIC",
-      "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/<username>/musicoin-assets/main/logo/musicoin-256.png"
-    }
-  ],
+  "name": "Musicoin Dev Tokenlist",
+  "timestamp": "2025-12-01T00:00:00+00:00",
   "version": {
     "major": 1,
     "minor": 0,
     "patch": 0
-  }
+  },
+  "tokens": [
+    {
+      "chainId": 80002,
+      "address": "0x0Bea477C4A9c18f62Ec5cAD553d08Dbba136e372",
+      "symbol": "M3PDEV",
+      "name": "Musicoin 3.0 Dev Token",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png"
+    }
+  ]
 }
