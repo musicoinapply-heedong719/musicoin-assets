@@ -4,7 +4,7 @@
   "tokens": [
     {
       "chainId": 137,
-      "address": "0xYourTokenAddressHere",
+      "address": "0xc3a399b30fe636193b9b9952426d795ef5ca0338",
       "name": "Musicoin 3.0",
       "symbol": "MUSIC",
       "decimals": 18,
