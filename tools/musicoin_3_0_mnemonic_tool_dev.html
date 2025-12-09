@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Musicoin 3.0 – Mnemonic & Key Generator (Dev Tool)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Development-only tool. Do NOT use with real funds. -->
+  <style>
+    :root {
+      --bg: #050914;
+      --fg: #e9edf6;
+      --fg-muted: #8c96aa;
+      --card-bg: #0b111d;
+      --card-border: #1a2940;
+      --accent: #f5c000;
+      --accent-dark: #c59a00;
+      --accent-soft: rgba(245, 192, 0, 0.12);
+      --danger: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050914;
+      color: var(--fg);
+      line-height: 1.45;
+    }
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 22px 16px 46px 16px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-wrap img {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: transparent;
+    }
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .title-main {
+      font-size: 1.55rem;
+      font-weight: 680;
+      letter-spacing: 0.03em;
+    }
+    .title-main span { color: var(--accent); }
+    .title-sub {
+      font-size: 0.9rem;
+      color: var(--fg-muted);
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      background: #050914;
+      color: var(--accent);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lang-select {
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid #263345;
+      background: #050914;
+      color: var(--fg-muted);
+      font-size: 0.82rem;
+    }
+    .warning {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: rgba(80, 18, 18, 0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 107, 107, 0.6);
+      padding: 9px 12px;
+      font-size: 0.84rem;
+      color: #ffd4d4;
+      margin-bottom: 16px;
+    }
+    .warning-icon {
+      margin-top: 2px;
+      font-size: 1.2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      padding: 16px 18px 16px 18px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+      margin-bottom: 18px;
+    }
+    .card-header { margin-bottom: 10px; }
+    .card-title {
+      font-size: 1.04rem;
+      font-weight: 630;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .card-title span { color: var(--accent); }
+    .card-desc {
+      font-size: 0.86rem;
+      color: var(--fg-muted);
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      margin: 12px 0 6px 0;
+    }
+    label {
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="file"],
+    textarea,
+    select {
+      border-radius: 7px;
+      border: 1px solid #27354a;
+      padding: 7px 10px;
+      font-size: 0.84rem;
+      background: #050914;
+      color: var(--fg);
+      outline: none;
+      width: 100%;
+    }
+    input[type="number"] {
+      max-width: 110px;
+      text-align: right;
+    }
+    input[type="file"] {
+      padding: 5px 6px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .row-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .row > .col-half {
+      flex: 1 1 0;
+      min-width: 240px;
+    }
+
+    button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-main {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-main:hover { background: var(--accent-dark); }
+    .btn-sub {
+      background: #050a16;
+      color: var(--fg-muted);
+      border: 1px solid #28354a;
+    }
+    .btn-sub:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+      margin: 6px 0 8px 0;
+    }
+    .list-wrapper {
+      background: #050914;
+      border-radius: 10px;
+      border: 1px solid #202f43;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    /* ===== diagram card ===== */
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .diagram-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .diagram-box {
+      background: #050914;
+      border-radius: 12px;
+      border: 1px solid #223147;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+    }
+    .diagram-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      margin-bottom: 6px;
+    }
+    .diagram-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(63, 79, 110, 0.9);
+      background: rgba(7, 13, 26, 0.95);
+      font-size: 0.8rem;
+      margin: 2px 3px;
+      white-space: nowrap;
+    }
+    .diagram-node.main {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .diagram-arrow {
+      display: inline-block;
+      margin: 0 4px;
+      color: var(--fg-muted);
+      font-size: 0.8rem;
+    }
+    .diagram-text {
+      font-size: 0.8rem;
+      color: var(--fg-muted);
+      margin-top: 6px;
+    }
+    .tree-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+    }
+    .tree-list li {
+      margin-bottom: 3px;
+    }
+
+    /* ===== Mnemonic list item ===== */
+    .mn-item {
+      background: rgba(7, 13, 24, 0.96);
+      border-radius: 12px;
+      border: 1px solid #28364a;
+      padding: 10px 12px 11px 12px;
+      margin-bottom: 10px;
+      font-size: 0.84rem;
+    }
+    .mn-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+    .chip {
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .mn-header-right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .chip-btn {
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      border-radius: 999px;
+      border: 1px solid #28374a;
+      background: #050a16;
+      color: #a8b3cf;
+      cursor: pointer;
+    }
+    .chip-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .mn-sections {
+      display: grid;
+      grid-template-columns: 1.9fr 1.1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .mn-sections {
+        grid-template-columns: 1fr;
+      }
+    }
+    .mn-section-title {
+      font-size: 0.78rem;
+      color: var(--fg-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Mnemonic word layout */
+    .word-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .word-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 4px;
+    }
+    .word-input {
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.82rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(30, 50, 77, 0.9);
+      background: rgba(9, 18, 35, 0.95);
+      color: #f5f7ff;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+    .word-input:disabled {
+      color: #f5f7ff;
+      opacity: 1;
+    }
+
+    .key-block {
+      background: rgba(3, 8, 18, 0.9);
+      border-radius: 8px;
+      border: 1px solid #27354a;
+      padding: 6px 10px;
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.8rem;
+      color: #d9e3ff;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .key-line {
+      margin-bottom: 3px;
+      word-break: keep-all;
+      white-space: nowrap;
+    }
+    .key-label {
+      display: inline-block;
+      min-width: 60px;
+      color: var(--fg-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .addr-block {
+      margin-top: 8px;
+      background: rgba(5, 12, 24, 0.95);
+      border-radius: 8px;
+      border: 1px solid #27364a;
+      padding: 7px 8px;
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.78rem;
+      color: #dbe5ff;
+    }
+    .addr-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    .addr-label {
+      display: inline-block;
+      min-width: 95px;
+      color: var(--fg-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .qr-btn {
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #28374a;
+      background: #050a16;
+      color: #8493b0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .qr-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* hierarchy tree under address */
+    .addr-tree {
+      margin-top: 6px;
+      padding: 6px 8px 4px 10px;
+      border-radius: 8px;
+      border: 1px dashed #30415a;
+      background: rgba(5, 10, 20, 0.95);
+      font-size: 0.78rem;
+      color: var(--fg-muted);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+    }
+    .tree-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+    .tree-bullet-root {
+      color: var(--accent);
+    }
+    .tree-bullet-child {
+      color: #8fb4ff;
+    }
+    .tree-bullet-leaf {
+      color: #c3ff9a;
+    }
+
+    pre {
+      background: #050914;
+      color: #e3ecff;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid #1b2940;
+      font-size: 0.78rem;
+      max-height: 240px;
+      overflow: auto;
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+    .hint {
+      font-size: 0.76rem;
+      color: var(--fg-muted);
+      margin-top: 4px;
+    }
+
+    /* QR Modal */
+    #qrModal {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.7);
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+    }
+    #qrModalInner {
+      background:#050914;
+      border-radius:12px;
+      padding:18px 18px 14px 18px;
+      border:1px solid #28374a;
+      text-align:center;
+      box-shadow:0 20px 40px rgba(0,0,0,0.7);
+    }
+    #qrCanvas {
+      background:#fff;
+      border-radius:8px;
+      padding:8px;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .header-right { align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/musicoinapply-heedong719/musicoin-assets/main/logo/musicoin-256.png" alt="Musicoin 3.0 Logo">
+      <div class="title-block">
+        <div class="title-main"><span>Musicoin 3.0</span> · Dev Wallet Tool</div>
+        <div class="title-sub">Mnemonic · Keys · Ethereum / Polygon / M3PDEV / Musicoin 3.0 (same address)</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge">Dev Only</span>
+      <select id="langSelect" class="lang-select">
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+        <option value="fr">Français</option>
+        <option value="ru">Русский</option>
+        <option value="zh">简体中文</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div id="warningBox">
+      This tool is strictly for development and testing. Do not store real funds in any wallet or address created from this page.
+    </div>
+  </div>
+
+  <!-- Network relationship diagram -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span>Network Relationship</span></div>
+      <div class="card-desc" id="diagramSubtitle">
+        How one mnemonic becomes the same address on Ethereum / Polygon, and how M3PDEV & Musicoin 3.0 relate to it.
+      </div>
+    </div>
+    <div class="diagram-grid">
+      <div class="diagram-box">
+        <div class="diagram-title" id="diagramFlowTitle">Flow</div>
+        <div>
+          <span class="diagram-node main">Mnemonic (24 words)</span>
+          <span class="diagram-arrow">➜</span>
+          <span class="diagram-node">Private key</span>
+          <span class="diagram-arrow">➜</span>
+          <span class="diagram-node">0x... address</span>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="diagram-node main">Ethereum</span>
+          <span class="diagram-arrow">➜</span>
+          <span class="diagram-node">0x... (same)</span>
+          <span class="diagram-arrow">➜</span>
+          <span class="diagram-node main">Polygon</span>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="diagram-node">M3PDEV token</span>
+          <span class="diagram-arrow">on</span>
+          <span class="diagram-node main">Polygon</span>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="diagram-node">Musicoin 3.0</span>
+          <span class="diagram-arrow">uses</span>
+          <span class="diagram-node">same 0x format</span>
+        </div>
+        <div class="diagram-text" id="diagramFlowText">
+          One mnemonic → one 0x address. The same address works on Ethereum and Polygon.
+          M3PDEV and Musicoin 3.0 balances are just different tokens using that same address.
+        </div>
+      </div>
+      <div class="diagram-box">
+        <div class="diagram-title" id="diagramTreeTitle">Hierarchy</div>
+        <ul class="tree-list" id="diagramTreeList">
+          <li>Ethereum (Layer 1 network)</li>
+          <li>↳ Polygon (Layer 2 / sidechain, same 0x address)</li>
+          <li style="padding-left:14px;">↳ M3PDEV token (Polygon test token)</li>
+          <li style="padding-left:14px;">↳ Musicoin 3.0 token (future main token)</li>
+        </ul>
+        <div class="diagram-text" id="diagramTreeText">
+          Think of Ethereum as the root. Polygon is a connected network that reuses the same address.
+          On Polygon, multiple tokens (M3PDEV, Musicoin 3.0, etc.) can all live under that one address.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 1: Bulk generator + backup -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span id="sectionGenerate">Bulk Mnemonic Generator</span></div>
+      <div class="card-desc" id="subtitle">
+        Generate multiple test mnemonics, keys, and addresses; export as ZIP, CSV, or encrypted backup.
+      </div>
+    </div>
+
+    <div class="section-label">Generate</div>
+    <div class="row">
+      <div style="max-width:150px;">
+        <label id="labelCount">Count</label>
+        <input id="mnCount" type="number" value="3" min="1" max="30">
+      </div>
+      <div class="row-inline">
+        <button class="btn-main" id="btnGenerate">Generate</button>
+        <button class="btn-sub" id="btnClear">Clear List</button>
+      </div>
+    </div>
+
+    <div class="section-label">Export</div>
+    <div class="row-inline" style="margin-bottom:6px;">
+      <button class="btn-sub" id="btnCsv">Export CSV</button>
+      <button class="btn-main" id="btnSave">Save All (ZIP)</button>
+    </div>
+
+    <div class="section-label">Encrypted Backup (AES-256)</div>
+    <div class="row">
+      <div class="col-half">
+        <label>Password (for new backup)</label>
+        <input type="password" id="backupPassword" placeholder="New backup password">
+        <button class="btn-main" id="btnEncryptedBackup" style="margin-top:6px;">Create Backup</button>
+        <div class="hint">Backup includes all generated mnemonics and keys.</div>
+      </div>
+      <div class="col-half">
+        <label>Restore encrypted backup</label>
+        <input type="file" id="backupFile" accept=".txt,.enc,.enc.txt" style="margin-top:2px;">
+        <input type="password" id="restorePassword" placeholder="Password for restore" style="margin-top:4px;">
+        <button class="btn-sub" id="btnRestoreBackup" style="margin-top:6px;">Restore</button>
+        <div class="hint">On success, the list below is replaced with restored data.</div>
+      </div>
+    </div>
+
+    <div id="statusText" class="status-text">Generated: 0</div>
+    <div id="mnList" class="list-wrapper"></div>
+    <div class="hint" style="margin-top:8px;">
+      * All addresses are Ethereum-compatible and can be used on Polygon, M3PDEV testnet, and Musicoin 3.0 chain with the same value.
+    </div>
+  </div>
+
+  <!-- Card 2: Single derive -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span id="sectionSingle">Single Mnemonic Derivation</span></div>
+      <div class="card-desc">
+        Derive master keys and the first 20 HD accounts (m/44'/60'/0'/0/x) from a single mnemonic.
+      </div>
+    </div>
+
+    <div class="section-label" id="labelMnemonic">Mnemonic</div>
+    <textarea id="singleMnemonic" placeholder="Enter 12 / 24-word mnemonic phrase here..."></textarea>
+
+    <div class="section-label" id="labelPassphrase">Passphrase (optional)</div>
+    <input id="singlePass" type="text" placeholder="Optional passphrase (mnemonic salt)">
+
+    <div class="row" style="margin-top:10px;">
+      <div class="row-inline">
+        <button class="btn-main" id="btnDerive">Derive</button>
+        <button class="btn-sub" id="btnClearSingle">Clear</button>
+      </div>
+    </div>
+
+    <div class="section-label">Mnemonic (view)</div>
+    <div id="singleMnemonicView" class="list-wrapper"></div>
+
+    <div class="section-label">Single Result</div>
+    <pre id="singleResult"></pre>
+
+    <div class="section-label">HD Wallet Accounts (m/44'/60'/0'/0/x)</div>
+    <pre id="hdResult"></pre>
+  </div>
+
+  <!-- Card 3: Ledger -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Ledger (Experimental, WebUSB)</div>
+      <div class="card-desc">
+        This section only checks if a Ledger device is visible via WebUSB in this browser. It does not perform signing or real wallet operations.
+      </div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn-sub" id="btnLedgerConnect">Request Ledger (WebUSB)</button>
+    </div>
+    <pre id="ledgerLog"></pre>
+  </div>
+</div>
+
+<!-- QR Modal -->
+<div id="qrModal">
+  <div id="qrModalInner">
+    <canvas id="qrCanvas"></canvas>
+    <div style="margin-top:10px;">
+      <button class="btn-sub" onclick="document.getElementById('qrModal').style.display='none'">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- External libs via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.2.0/sha.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+<script>
+/* ===== Language pack ===== */
+const LANG = {
+  en:{
+    warning:"This tool is strictly for development and testing. Do not store real funds in any wallet or address created from this page.",
+    sectionGenerate:"Bulk Mnemonic Generator",
+    subtitle:"Generate multiple test mnemonics, keys, and addresses; export as ZIP, CSV, or encrypted backup.",
+    labelCount:"Count",
+    btnGenerate:"Generate",
+    btnClear:"Clear List",
+    btnSave:"Save All (ZIP)",
+    btnCsv:"Export CSV",
+    labelMnemonic:"Mnemonic",
+    labelPassphrase:"Passphrase (optional)",
+    sectionSingle:"Single Mnemonic Derivation",
+    diagramSubtitle:"How one mnemonic becomes the same address on Ethereum / Polygon, and how M3PDEV & Musicoin 3.0 relate to it.",
+    diagramFlowTitle:"Flow",
+    diagramFlowText:"One mnemonic → one 0x address. The same address works on Ethereum and Polygon. M3PDEV and Musicoin 3.0 balances are just different tokens using that same address.",
+    diagramTreeTitle:"Hierarchy",
+    diagramTreeList:[
+      "Ethereum (Layer 1 network)",
+      "↳ Polygon (Layer 2 / sidechain, same 0x address)",
+      "↳ M3PDEV token (Polygon test token)",
+      "↳ Musicoin 3.0 token (future main token)"
+    ],
+    diagramTreeText:"Think of Ethereum as the root. Polygon is a connected network that reuses the same address. On Polygon, multiple tokens (M3PDEV, Musicoin 3.0, etc.) can all live under that one address."
+  },
+  ko:{
+    warning:"이 도구는 개발 및 테스트 전용입니다. 여기에서 생성된 지갑이나 주소에는 실제 자산을 보관하지 마세요.",
+    sectionGenerate:"니모닉 벌크 생성",
+    subtitle:"테스트용 니모닉·키·주소를 여러 개 생성하고 ZIP, CSV, 암호 백업으로 내보낼 수 있습니다.",
+    labelCount:"개수",
+    btnGenerate:"생성",
+    btnClear:"목록 초기화",
+    btnSave:"전체 저장 (ZIP)",
+    btnCsv:"CSV 내보내기",
+    labelMnemonic:"니모닉",
+    labelPassphrase:"패스프레이즈 (선택)",
+    sectionSingle:"단일 니모닉 파생",
+    diagramSubtitle:"하나의 니모닉이 이더리움/폴리곤에서 같은 주소가 되고, 그 위에 M3PDEV와 Musicoin 3.0 토큰이 어떻게 연결되는지 보여줍니다.",
+    diagramFlowTitle:"흐름",
+    diagramFlowText:"하나의 니모닉 → 하나의 0x 주소. 이 주소는 이더리움과 폴리곤에서 동일하게 사용됩니다. M3PDEV와 Musicoin 3.0 잔액은 이 주소 위에 올라가는 서로 다른 토큰일 뿐입니다.",
+    diagramTreeTitle:"계층 구조",
+    diagramTreeList:[
+      "Ethereum (1층 메인 네트워크)",
+      "↳ Polygon (2층 / 사이드체인, 같은 0x 주소 사용)",
+      "↳ M3PDEV 토큰 (Polygon 테스트 토큰)",
+      "↳ Musicoin 3.0 토큰 (향후 메인 토큰)"
+    ],
+    diagramTreeText:"이더리움을 뿌리(root)라고 생각하면 됩니다. 폴리곤은 같은 주소를 재사용하는 연결된 네트워크이고, 그 위에서 M3PDEV, Musicoin 3.0 같은 여러 토큰이 한 주소 아래에 같이 존재할 수 있습니다."
+  },
+  fr:{
+    warning:"Cet outil est strictement réservé au développement et aux tests. N’utilisez pas ces portefeuilles/adresses pour de vrais fonds.",
+    sectionGenerate:"Générateur de Mnémoniques (lot)",
+    subtitle:"Générez plusieurs mnémoniques de test, clés et adresses; exportez en ZIP, CSV ou sauvegarde chiffrée.",
+    labelCount:"Quantité",
+    btnGenerate:"Générer",
+    btnClear:"Effacer la liste",
+    btnSave:"Tout enregistrer (ZIP)",
+    btnCsv:"Exporter CSV",
+    labelMnemonic:"Mnémonique",
+    labelPassphrase:"Phrase secrète (optionnelle)",
+    sectionSingle:"Dérivation d’un mnémonique",
+    diagramSubtitle:"Comment une mnémonique donne la même adresse sur Ethereum / Polygon, et comment M3PDEV & Musicoin 3.0 y sont liés.",
+    diagramFlowTitle:"Flux",
+    diagramFlowText:"Une mnémonique → une adresse 0x. La même adresse fonctionne sur Ethereum et Polygon. M3PDEV et Musicoin 3.0 sont simplement des jetons différents utilisant cette même adresse.",
+    diagramTreeTitle:"Hiérarchie",
+    diagramTreeList:[
+      "Ethereum (réseau de couche 1)",
+      "↳ Polygon (couche 2 / sidechain, même adresse 0x)",
+      "↳ Jeton M3PDEV (jeton de test sur Polygon)",
+      "↳ Jeton Musicoin 3.0 (futur jeton principal)"
+    ],
+    diagramTreeText:"Considérez Ethereum comme la racine. Polygon est un réseau connecté qui réutilise la même adresse. Sur Polygon, plusieurs jetons (M3PDEV, Musicoin 3.0, etc.) peuvent vivre sous cette même adresse."
+  },
+  ru:{
+    warning:"Этот инструмент предназначен только для разработки и тестирования. Не храните реальные средства на созданных кошельках/адресах.",
+    sectionGenerate:"Пакетный генератор мнемоник",
+    subtitle:"Создавайте несколько тестовых мнемоник, ключей и адресов; экспорт в ZIP, CSV или зашифрованный бэкап.",
+    labelCount:"Количество",
+    btnGenerate:"Создать",
+    btnClear:"Очистить список",
+    btnSave:"Сохранить всё (ZIP)",
+    btnCsv:"Экспорт CSV",
+    labelMnemonic:"Мнемоника",
+    labelPassphrase:"Парольная фраза (опционально)",
+    sectionSingle:"Производная от одной мнемоники",
+    diagramSubtitle:"Как одна мнемоника даёт один и тот же адрес в сетях Ethereum / Polygon и как с ним связаны токены M3PDEV и Musicoin 3.0.",
+    diagramFlowTitle:"Поток",
+    diagramFlowText:"Одна мнемоника → один 0x-адрес. Этот адрес одинаково используется и в Ethereum, и в Polygon. Балансы M3PDEV и Musicoin 3.0 — это просто разные токены на этом же адресе.",
+    diagramTreeTitle:"Иерархия",
+    diagramTreeList:[
+      "Ethereum (сеть уровня 1)",
+      "↳ Polygon (уровень 2 / сайдчейн, тот же 0x-адрес)",
+      "↳ Токен M3PDEV (тестовый токен в Polygon)",
+      "↳ Токен Musicoin 3.0 (будущий основной токен)"
+    ],
+    diagramTreeText:"Считайте Ethereum корнем. Polygon — это подключённая сеть, которая переиспользует тот же адрес. В Polygon несколько токенов (M3PDEV, Musicoin 3.0 и др.) могут существовать под одним адресом."
+  },
+  zh:{
+    warning:"本工具仅用于开发和测试。请勿在此处生成的钱包或地址中存放真实资产。",
+    sectionGenerate:"批量助记词生成器",
+    subtitle:"批量生成测试用助记词、密钥和地址，并导出为 ZIP、CSV 或加密备份。",
+    labelCount:"数量",
+    btnGenerate:"生成",
+    btnClear:"清空列表",
+    btnSave:"全部保存 (ZIP)",
+    btnCsv:"导出 CSV",
+    labelMnemonic:"助记词",
+    labelPassphrase:"密码短语（可选）",
+    sectionSingle:"单个助记词派生",
+    diagramSubtitle:"展示一个助记词如何在以太坊/Polygon 上产生同一个地址，以及 M3PDEV 和 Musicoin 3.0 与该地址之间的关系。",
+    diagramFlowTitle:"流程",
+    diagramFlowText:"一个助记词 → 一个 0x 地址。该地址在以太坊和 Polygon 上相同使用。M3PDEV 和 Musicoin 3.0 的余额只是挂在该地址上的不同代币。",
+    diagramTreeTitle:"层级结构",
+    diagramTreeList:[
+      "Ethereum（第一层主网）",
+      "↳ Polygon（第二层/侧链，使用同一个 0x 地址）",
+      "↳ M3PDEV 代币（Polygon 测试代币）",
+      "↳ Musicoin 3.0 代币（未来主代币）"
+    ],
+    diagramTreeText:"可以把以太坊看作根。Polygon 是一个复用同一地址的连接网络，在 Polygon 上，多个代币（M3PDEV、Musicoin 3.0 等）可以同时存在于同一个地址之下。"
+  },
+};
+
+function applyLanguage(lang){
+  const t=LANG[lang] || LANG.en;
+  document.getElementById("warningBox").innerText=t.warning;
+  document.getElementById("sectionGenerate").innerText=t.sectionGenerate;
+  document.getElementById("subtitle").innerText=t.subtitle;
+  document.getElementById("labelCount").innerText=t.labelCount;
+  document.getElementById("btnGenerate").innerText=t.btnGenerate;
+  document.getElementById("btnClear").innerText=t.btnClear;
+  document.getElementById("btnSave").innerText=t.btnSave;
+  document.getElementById("btnCsv").innerText=t.btnCsv;
+  document.getElementById("labelMnemonic").innerText=t.labelMnemonic;
+  document.getElementById("labelPassphrase").innerText=t.labelPassphrase;
+  document.getElementById("sectionSingle").innerText=t.sectionSingle;
+
+  document.getElementById("diagramSubtitle").innerText=t.diagramSubtitle;
+  document.getElementById("diagramFlowTitle").innerText=t.diagramFlowTitle;
+  document.getElementById("diagramFlowText").innerText=t.diagramFlowText;
+  document.getElementById("diagramTreeTitle").innerText=t.diagramTreeTitle;
+  document.getElementById("diagramTreeText").innerText=t.diagramTreeText;
+  const treeList = document.getElementById("diagramTreeList");
+  treeList.innerHTML = "";
+  t.diagramTreeList.forEach((line, idx) => {
+    const li = document.createElement("li");
+    if(idx >=2) li.style.paddingLeft = "14px";
+    li.textContent = line;
+    treeList.appendChild(li);
+  });
+}
+
+document.getElementById("langSelect").value="en";
+applyLanguage("en");
+document.getElementById("langSelect").addEventListener("change",e=>applyLanguage(e.target.value));
+
+/* ===== Helper: hex <-> bytes, concat, copy ===== */
+function toHex(bytes){
+  return Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function hexToBytes(hex){
+  if(hex.length%2!==0) throw new Error("Invalid hex length");
+  const out=new Uint8Array(hex.length/2);
+  for(let i=0;i<out.length;i++){
+    out[i]=parseInt(hex.substr(i*2,2),16);
+  }
+  return out;
+}
+function concatBytes(...arrs){
+  let len=0;
+  arrs.forEach(a=>len+=a.length);
+  const out=new Uint8Array(len);
+  let offset=0;
+  arrs.forEach(a=>{
+    out.set(a,offset);
+    offset+=a.length;
+  });
+  return out;
+}
+function intToBytes32(i){
+  const out=new Uint8Array(4);
+  out[0]=(i>>24)&0xff;
+  out[1]=(i>>16)&0xff;
+  out[2]=(i>>8)&0xff;
+  out[3]=i&0xff;
+  return out;
+}
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      alert("Mnemonic copied to clipboard.");
+    }).catch(()=>{
+      fallbackCopy(text);
+    });
+  }else{
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text){
+  const ta=document.createElement("textarea");
+  ta.value=text;
+  ta.style.position="fixed";
+  ta.style.opacity="0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+  alert("Mnemonic copied to clipboard.");
+}
+
+/* ===== Simple dev wordlist (not strict BIP39) ===== */
+const WORDLIST=[
+  "music","sound","block","chain","hash","token","ledger","wallet","key","note",
+  "guitar","piano","drum","bass","vocal","studio","record","mix","master","stage",
+  "alpha","beta","gamma","delta","echo","fusion","energy","light","shadow","river",
+  "stone","forest","ocean","sky","storm","thunder","spark","flame","ember","metal",
+  "digital","analog","signal","random","secure","strong","future","vision","create","flow",
+  "rhythm","melody","harmony","beat","tempo","loop","sample","filter","effect","drive",
+  "network","node","peer","bridge","portal","public","private","secret","random","entropy",
+  "orange","blue","green","purple","silver","gold","crystal","pixel","vector","frame",
+  "launch","orbit","cosmos","galaxy","nebula","quantum","signal","pulse","gravity","nova"
+];
+
+/* ===== KDF + HMAC ===== */
+async function pbkdf2_sha512(password,salt,iterations=2048){
+  const enc=new TextEncoder();
+  const keyMaterial=await crypto.subtle.importKey("raw",enc.encode(password),{name:"PBKDF2"},false,["deriveBits"]);
+  const derived=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-512",salt,iterations},keyMaterial,512);
+  return new Uint8Array(derived);
+}
+async function hmac_sha512(keyBytes,dataBytes){
+  const cryptoKey=await crypto.subtle.importKey("raw",keyBytes,{name:"HMAC",hash:"SHA-512"},false,["sign"]);
+  const sig=await crypto.subtle.sign("HMAC",cryptoKey,dataBytes);
+  return new Uint8Array(sig);
+}
+
+/* ===== secp256k1 + address ===== */
+function privateToPublic(privHex){
+  const ec=new elliptic.ec("secp256k1");
+  const key=ec.keyFromPrivate(privHex,"hex");
+  return key.getPublic(false,"hex");
+}
+function pubkeyToEthAddress(uncompressedHex){
+  const pubNoPrefix=uncompressedHex.slice(2);
+  const sha=new jsSHA("SHA3-256","HEX");
+  sha.update(pubNoPrefix);
+  const hash=sha.getHash("HEX");
+  return "0x"+hash.slice(-40);
+}
+function isValidPrivateKey(hex){
+  try{
+    const ec=new elliptic.ec("secp256k1");
+    const bn=ec.keyFromPrivate(hex,"hex").getPrivate();
+    return !bn.isZero();
+  }catch(e){return false;}
+}
+
+/* ===== Dev mnemonic ===== */
+function generateMnemonicDev(){
+  const words=[];
+  for(let i=0;i<24;i++){
+    const r=Math.floor(Math.random()*WORDLIST.length);
+    words.push(WORDLIST[r]);
+  }
+  return words.join(" ");
+}
+
+/* ===== Derive from mnemonic (seed / master) ===== */
+async function deriveFromMnemonic(mnemonic,passphrase=""){
+  const salt=new TextEncoder().encode("mnemonic"+passphrase);
+  const seed=await pbkdf2_sha512(mnemonic,salt,2048);
+  const seedHex=toHex(seed);
+  const I=await hmac_sha512(new TextEncoder().encode("Bitcoin seed"),seed);
+  const IL=I.slice(0,32);
+  const IR=I.slice(32);
+  const privHex=toHex(IL);
+  const chainHex=toHex(IR);
+  if(!isValidPrivateKey(privHex)) throw new Error("Invalid derived private key");
+  const pubHex=privateToPublic(privHex);
+  const addr=pubkeyToEthAddress(pubHex);
+  return {seedHex,IL:privHex,IR:chainHex,address:addr};
+}
+
+/* ===== CKDpriv (browser-safe) ===== */
+async function CKDpriv(parentKeyHex,parentChainHex,index){
+  const hardened=index>=0x80000000;
+  const parentKeyBytes=hexToBytes(parentKeyHex);
+  const parentChainBytes=hexToBytes(parentChainHex);
+  const idxBytes=intToBytes32(index);
+
+  let data;
+  if(hardened){
+    const zero=new Uint8Array([0x00]);
+    data=concatBytes(zero,parentKeyBytes,idxBytes);
+  }else{
+    const ec=new elliptic.ec("secp256k1");
+    const pubHex=ec.keyFromPrivate(parentKeyHex,"hex").getPublic(false,"hex");
+    const pubBytes=hexToBytes(pubHex);
+    data=concatBytes(pubBytes,idxBytes);
+  }
+
+  const I=await hmac_sha512(parentChainBytes,data);
+  const IL=I.slice(0,32);
+  const IR=I.slice(32);
+  const ec=new elliptic.ec("secp256k1");
+  const bnIL=ec.keyFromPrivate(IL).getPrivate();
+  const bnPK=ec.keyFromPrivate(parentKeyHex,"hex").getPrivate();
+  const childKey=bnIL.add(bnPK).umod(ec.curve.n);
+  return {key:childKey.toString("hex").padStart(64,"0"),chain:toHex(IR)};
+}
+
+/* ===== HD wallet derivation (m/44'/60'/0'/0/x) ===== */
+async function deriveHDwallet(masterIL,masterIR,count=20){
+  const hardened=i=>(0x80000000|i);
+  const L1=await CKDpriv(masterIL,masterIR,hardened(44));
+  const L2=await CKDpriv(L1.key,L1.chain,hardened(60));
+  const L3=await CKDpriv(L2.key,L2.chain,hardened(0));
+  const L4=await CKDpriv(L3.key,L3.chain,0);
+  const accounts=[];
+  for(let i=0;i<count;i++){
+    const child=await CKDpriv(L4.key,L4.chain,i);
+    const pubHex=privateToPublic(child.key);
+    const addr=pubkeyToEthAddress(pubHex);
+    accounts.push({index:i,priv:child.key,pub:pubHex,address:addr});
+  }
+  return accounts;
+}
+
+/* ===== State + rendering ===== */
+let mnList=[];
+const listContainer=document.getElementById("mnList");
+const statusText=document.getElementById("statusText");
+
+function showQR(text){
+  const modal=document.getElementById("qrModal");
+  const canvas=document.getElementById("qrCanvas");
+  new QRious({element:canvas,value:text,size:260});
+  modal.style.display="flex";
+}
+
+/* render for bulk list */
+function renderList(){
+  listContainer.innerHTML="";
+  statusText.innerText="Generated: "+mnList.length;
+  mnList.forEach(item=>{
+    const div=document.createElement("div");
+    div.className="mn-item";
+    const words=item.mnemonic.split(/\s+/).filter(Boolean);
+
+    let wordRowsHtml="";
+    for(let i=0;i<words.length;i+=4){
+      let rowHtml='<div class="word-row">';
+      for(let j=0;j<4 && (i+j)<words.length;j++){
+        const idx=i+j;
+        const num=idx+1;
+        const w=words[idx];
+        rowHtml+=`<input type="text" class="word-input" value="${num}. ${w}" disabled />`;
+      }
+      rowHtml+="</div>";
+      wordRowsHtml+=rowHtml;
+    }
+    const mnEsc=item.mnemonic.replace(/'/g,"\'");
+
+    div.innerHTML=`
+      <div class="mn-header">
+        <div># ${item.index}</div>
+        <div class="mn-header-right">
+          <button class="chip-btn" onclick="copyText('${mnEsc}')">Copy mnemonic</button>
+          <div class="chip">Master</div>
+        </div>
+      </div>
+      <div class="mn-sections">
+        <div>
+          <div class="mn-section-title">Mnemonic (24 words)</div>
+          <div class="word-box">${wordRowsHtml}</div>
+        </div>
+        <div>
+          <div class="mn-section-title">Master Keys & Addresses</div>
+          <div class="key-block">
+            <div class="key-line"><span class="key-label">seed</span> ${item.seed}</div>
+            <div class="key-line"><span class="key-label">IL</span> ${item.IL}</div>
+            <div class="key-line"><span class="key-label">IR</span> ${item.IR}</div>
+          </div>
+          <div class="addr-block" style="margin-top:6px;">
+            <div class="addr-line">
+              <span class="addr-label">ethereum</span>
+              <span>${item.address}</span>
+              <button class="qr-btn" onclick="showQR('${item.address}')">QR</button>
+            </div>
+            <div class="addr-line">
+              <span class="addr-label">polygon</span>
+              <span>${item.address}</span>
+            </div>
+            <div class="addr-line">
+              <span class="addr-label">M3PDEV</span>
+              <span>${item.address}</span>
+            </div>
+            <div class="addr-line">
+              <span class="addr-label">musicoin 3.0</span>
+              <span>${item.address}</span>
+            </div>
+            <div class="addr-tree">
+              <div class="tree-line">
+                <span class="tree-bullet-root">●</span>
+                <span>Ethereum network (L1) – address: 0x…</span>
+              </div>
+              <div class="tree-line">
+                <span class="tree-bullet-child">└─</span>
+                <span>Polygon network (L2) – same address</span>
+              </div>
+              <div class="tree-line" style="padding-left:12px;">
+                <span class="tree-bullet-leaf">└─</span>
+                <span>M3PDEV token on Polygon</span>
+              </div>
+              <div class="tree-line" style="padding-left:12px;">
+                <span class="tree-bullet-leaf">└─</span>
+                <span>Musicoin 3.0 token (same 0x format)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    listContainer.appendChild(div);
+  });
+}
+
+/* helper: render mnemonic for single derive */
+function renderSingleMnemonicView(mnemonic){
+  const container=document.getElementById("singleMnemonicView");
+  container.innerHTML="";
+  if(!mnemonic){ return; }
+  const words=mnemonic.split(/\s+/).filter(Boolean);
+  const wrapper=document.createElement("div");
+  wrapper.className="mn-item";
+  let wordRowsHtml="";
+  for(let i=0;i<words.length;i+=4){
+    let rowHtml='<div class="word-row">';
+    for(let j=0;j<4 && (i+j)<words.length;j++){
+      const idx=i+j;
+      const num=idx+1;
+      const w=words[idx];
+      rowHtml+=`<input type="text" class="word-input" value="${num}. ${w}" disabled />`;
+    }
+    rowHtml+="</div>";
+    wordRowsHtml+=rowHtml;
+  }
+  const mnEsc=mnemonic.replace(/'/g,"\'");
+  wrapper.innerHTML=`
+    <div class="mn-header">
+      <div>Entered mnemonic</div>
+      <div class="mn-header-right">
+        <button class="chip-btn" onclick="copyText('${mnEsc}')">Copy mnemonic</button>
+      </div>
+    </div>
+    <div class="mn-sections">
+      <div>
+        <div class="mn-section-title">Mnemonic words</div>
+        <div class="word-box">${wordRowsHtml}</div>
+      </div>
+    </div>
+  `;
+  container.appendChild(wrapper);
+}
+
+/* Bulk generator */
+async function addGeneratedItems(count){
+  for(let i=0;i<count;i++){
+    const mnemonic=generateMnemonicDev();
+    const d=await deriveFromMnemonic(mnemonic);
+    mnList.push({
+      index:(mnList.length+1).toString().padStart(3,"0"),
+      mnemonic,
+      seed:d.seedHex,
+      IL:d.IL,
+      IR:d.IR,
+      address:d.address
+    });
+  }
+  renderList();
+}
+
+document.getElementById("btnGenerate").onclick=()=>{
+  const num=parseInt(document.getElementById("mnCount").value||"0",10);
+  if(num>0) addGeneratedItems(num);
+};
+document.getElementById("btnClear").onclick=()=>{
+  mnList=[];
+  renderList();
+};
+
+/* Single derive + HD */
+document.getElementById("btnDerive").onclick=async ()=>{
+  const mn=document.getElementById("singleMnemonic").value.trim();
+  const pass=document.getElementById("singlePass").value.trim();
+  if(!mn) return;
+  try{
+    const d=await deriveFromMnemonic(mn,pass);
+    const hd=await deriveHDwallet(d.IL,d.IR,20);
+    renderSingleMnemonicView(mn);
+    document.getElementById("singleResult").innerText=
+`seed: ${d.seedHex}
+IL: ${d.IL}
+IR: ${d.IR}
+
+ethereum: ${d.address}
+polygon: ${d.address}
+M3PDEV: ${d.address}
+musicoin 3.0: ${d.address}`;
+    let hdText="";
+    hd.forEach(acc=>{
+      hdText+=`index: ${acc.index}
+private: ${acc.priv}
+address: ${acc.address}
+
+`;
+    });
+    document.getElementById("hdResult").innerText=hdText;
+  }catch(e){
+    document.getElementById("singleResult").innerText="Error: "+e.message;
+  }
+};
+document.getElementById("btnClearSingle").onclick=()=>{
+  document.getElementById("singleMnemonic").value="";
+  document.getElementById("singlePass").value="";
+  document.getElementById("singleResult").innerText="";
+  document.getElementById("hdResult").innerText="";
+  document.getElementById("singleMnemonicView").innerHTML="";
+};
+
+/* CSV export */
+function downloadCSV(filename,text){
+  const blob=new Blob([text],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+document.getElementById("btnCsv").onclick=()=>{
+  if(mnList.length===0){alert("Nothing to export");return;}
+  let csv="index,mnemonic,seed,IL,IR,ethereum,polygon,M3PDEV,musicoin_3_0\n";
+  mnList.forEach(item=>{
+    const esc=s=>`"${String(s).replace(/"/g,'""')}"`;
+    csv+=[
+      esc(item.index),
+      esc(item.mnemonic),
+      esc(item.seed),
+      esc(item.IL),
+      esc(item.IR),
+      esc(item.address),
+      esc(item.address),
+      esc(item.address),
+      esc(item.address)
+    ].join(",")+"\n";
+  });
+  const name="wallets_"+new Date().toISOString().replace(/[:]/g,"-").slice(0,16)+".csv";
+  downloadCSV(name,csv);
+};
+
+/* Save All (ZIP) */
+document.getElementById("btnSave").onclick=async ()=>{
+  if(mnList.length===0){alert("Nothing to save");return;}
+  const zip=new JSZip();
+  for(const item of mnList){
+    const folder=zip.folder(item.index);
+    folder.file("mnemonic.txt",
+`# index: ${item.index}
+# created_at: ${new Date().toISOString()}
+
+${item.mnemonic}
+`);
+    folder.file("keys.txt",
+`# index: ${item.index}
+# created_at: ${new Date().toISOString()}
+
+# seed (64 bytes hex)
+${item.seed}
+
+# master private key (IL)
+${item.IL}
+
+# chain code (IR)
+${item.IR}
+
+# ethereum address
+${item.address}
+
+# polygon address (same as ethereum)
+${item.address}
+
+# M3PDEV address (same as ethereum)
+${item.address}
+
+# musicoin 3.0 address (same as ethereum)
+${item.address}
+`);
+  }
+  const zipName="wallet_export_"+new Date().toISOString().replace(/[:]/g,"-").slice(0,16)+".zip";
+  const blob=await zip.generateAsync({type:"blob"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=zipName;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* Encrypted backup (AES-256) */
+document.getElementById("btnEncryptedBackup").onclick=()=>{
+  if(mnList.length===0){alert("Nothing to backup");return;}
+  const pwd=document.getElementById("backupPassword").value;
+  if(!pwd){alert("Password is required");return;}
+  const payload={created_at:new Date().toISOString(),count:mnList.length,items:mnList};
+  const plaintext=JSON.stringify(payload,null,2);
+  const ciphertext=CryptoJS.AES.encrypt(plaintext,pwd).toString();
+  const blob=new Blob([ciphertext],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="encrypted_backup_"+new Date().toISOString().replace(/[:]/g,"-").slice(0,16)+".enc.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* Restore encrypted backup */
+document.getElementById("btnRestoreBackup").onclick=()=>{
+  const fileInput=document.getElementById("backupFile");
+  const pwd=document.getElementById("restorePassword").value;
+  if(!fileInput.files || fileInput.files.length===0){alert("Select a backup file first");return;}
+  if(!pwd){alert("Password is required for restore");return;}
+
+  const file=fileInput.files[0];
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const ciphertext=e.target.result;
+      const bytes=CryptoJS.AES.decrypt(ciphertext,pwd);
+      const plaintext=bytes.toString(CryptoJS.enc.Utf8);
+      if(!plaintext){alert("Decryption failed. Check password.");return;}
+      const payload=JSON.parse(plaintext);
+      if(!payload.items || !Array.isArray(payload.items)){alert("Invalid backup format.");return;}
+      mnList=payload.items.map((x,i)=>({
+        index:x.index || String(i+1).padStart(3,"0"),
+        mnemonic:x.mnemonic,
+        seed:x.seed,
+        IL:x.IL,
+        IR:x.IR,
+        address:x.address
+      }));
+      renderList();
+      alert("Backup restored. Items: "+mnList.length);
+    }catch(err){
+      alert("Restore error: "+err.message);
+    }
+  };
+  reader.readAsText(file);
+};
+
+/* Ledger WebUSB basic detection */
+document.getElementById("btnLedgerConnect").onclick=async ()=>{
+  const log=document.getElementById("ledgerLog");
+  if(!navigator.usb){
+    log.innerText="WebUSB not supported in this browser.";
+    return;
+  }
+  try{
+    const device=await navigator.usb.requestDevice({filters:[{vendorId:0x2c97}]});
+    log.innerText="Ledger device selected:\n"+
+      "productName: "+device.productName+"\n"+
+      "serialNumber: "+(device.serialNumber||"N/A");
+  }catch(e){
+    log.innerText="User cancelled or no device selected.";
+  }
+};
+</script>
+</body>
+</html>
